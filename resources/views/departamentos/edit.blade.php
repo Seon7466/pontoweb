@@ -1,1 +1,25 @@
-<x-app-layout><x-slot name="header"><h2 class="text-lg font-semibold text-slate-900">Editar Departamento</h2></x-slot><x-pw.page-header title="Editar Departamento" description="Atualize os dados do registro." /><x-pw.card><form method="POST" action="{{ route('departamentos.update', $item) }}">@csrf @method('PUT') @include('departamentos.form')<div class="mt-6 flex justify-end gap-3"><x-pw.button :href="route('departamentos.index')" variant="secondary">Cancelar</x-pw.button><x-pw.button type="submit" variant="success">Salvar alterações</x-pw.button></div></form></x-pw.card></x-app-layout>
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="text-lg font-semibold text-slate-900">Editar departamento</h2>
+    </x-slot>
+
+    <x-pw.flash />
+
+    <x-pw.page-header
+        title="Editar departamento"
+        :description="$item->nome"
+    />
+
+    <x-pw.card>
+        <form method="POST" action="{{ route('departamentos.update', $item) }}">
+            @csrf
+            @method('PUT')
+            @include('departamentos.form')
+
+            <x-pw.form-actions
+                :cancel-href="route('departamentos.index')"
+                submit-label="Salvar alterações"
+            />
+        </form>
+    </x-pw.card>
+</x-app-layout>

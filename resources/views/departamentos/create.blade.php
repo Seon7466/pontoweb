@@ -1,1 +1,22 @@
-<x-app-layout><x-slot name="header"><h2 class="text-lg font-semibold text-slate-900">Novo Departamento</h2></x-slot><x-pw.page-header title="Novo Departamento" description="Preencha os dados abaixo para cadastrar." /><x-pw.card><form method="POST" action="{{ route('departamentos.store') }}">@csrf @include('departamentos.form')<div class="mt-6 flex justify-end gap-3"><x-pw.button :href="route('departamentos.index')" variant="secondary">Cancelar</x-pw.button><x-pw.button type="submit" variant="success">Salvar</x-pw.button></div></form></x-pw.card></x-app-layout>
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="text-lg font-semibold text-slate-900">Novo departamento</h2>
+    </x-slot>
+
+    <x-pw.page-header
+        title="Cadastrar departamento"
+        description="Crie um setor para organizar cargos e funcionários."
+    />
+
+    <x-pw.card>
+        <form method="POST" action="{{ route('departamentos.store') }}">
+            @csrf
+            @include('departamentos.form')
+
+            <x-pw.form-actions
+                :cancel-href="route('departamentos.index')"
+                submit-label="Cadastrar departamento"
+            />
+        </form>
+    </x-pw.card>
+</x-app-layout>

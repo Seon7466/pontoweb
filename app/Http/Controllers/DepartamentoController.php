@@ -19,4 +19,9 @@ class DepartamentoController extends BaseCrudController
     {
         return ['nome', 'responsavel'];
     }
+
+    protected function scopedQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::scopedQuery()->withCount(['cargos', 'funcionarios']);
+    }
 }
