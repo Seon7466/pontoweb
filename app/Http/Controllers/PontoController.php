@@ -18,6 +18,7 @@ class PontoController extends Controller
 
         $data = $request->date('data')?->format('Y-m-d') ?? now()->toDateString();
         $funcionarioId = $request->integer('funcionario_id') ?: null;
+        $origem = $request->string('origem')->toString() ?: null;
 
         $funcionarios = Funcionario::query()
             ->where('empresa_id', $empresaId)
@@ -25,21 +26,48 @@ class PontoController extends Controller
             ->orderBy('nome')
             ->get(['id', 'nome', 'matricula', 'codigo_relogio']);
 
-        $batidas = BatidaPonto::query()
-            ->with(['funcionario', 'equipamento'])
+        $baseBatidas = BatidaPonto::query()
             ->where('empresa_id', $empresaId)
             ->whereDate('data', $data)
-            ->when($funcionarioId, fn ($q) => $q->where('funcionario_id', $funcionarioId))
+            ->when($funcionarioId, fn ($query) => $query->where('funcionario_id', $funcionarioId))
+            ->when($origem, fn ($query) => $query->where('origem', $origem));
+
+        $indicadores = [
+            'batidas' => (clone $baseBatidas)->count(),
+            'funcionarios_com_batida' => (clone $baseBatidas)->distinct('funcionario_id')->count('funcionario_id'),
+            'manuais' => (clone $baseBatidas)->where('manual', true)->count(),
+            'pendentes' => MarcacaoRelogio::query()
+                ->where('empresa_id', $empresaId)
+                ->where('status', 'erro')
+                ->count(),
+        ];
+
+        $batidas = (clone $baseBatidas)
+            ->with([
+                'funcionario:id,nome,matricula',
+                'equipamento:id,nome,modelo',
+                'usuarioRegistro:id,name',
+            ])
             ->orderByDesc('data_hora')
             ->paginate(30)
             ->withQueryString();
 
-        $pendentes = MarcacaoRelogio::query()
+        $origens = BatidaPonto::query()
             ->where('empresa_id', $empresaId)
-            ->where('status', 'erro')
-            ->count();
+            ->whereNotNull('origem')
+            ->distinct()
+            ->orderBy('origem')
+            ->pluck('origem');
 
-        return view('ponto.index', compact('batidas', 'funcionarios', 'data', 'funcionarioId', 'pendentes'));
+        return view('ponto.index', compact(
+            'batidas',
+            'funcionarios',
+            'data',
+            'funcionarioId',
+            'origem',
+            'origens',
+            'indicadores'
+        ));
     }
 
     public function registrarContingencia(Request $request)
@@ -49,8 +77,9 @@ class PontoController extends Controller
 
         $dados = $request->validate([
             'funcionario_id' => [
-                'required', 'integer',
-                Rule::exists('funcionarios', 'id')->where(fn ($q) => $q->where('empresa_id', $empresaId)),
+                'required',
+                'integer',
+                Rule::exists('funcionarios', 'id')->where(fn ($query) => $query->where('empresa_id', $empresaId)),
             ],
             'observacao' => ['required', 'string', 'min:5', 'max:500'],
         ]);

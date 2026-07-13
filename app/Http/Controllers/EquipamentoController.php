@@ -18,17 +18,59 @@ class EquipamentoController extends Controller
         $empresaId = auth()->user()->empresa_id;
         abort_unless($empresaId, 403, 'Vincule uma empresa ao usuário.');
 
-        $items = Equipamento::query()
-            ->where('empresa_id', $empresaId)
-            ->latest()
-            ->paginate(15);
+        $search = trim((string) $request->string('search'));
 
-        return view('equipamentos.index', compact('items'));
+        $baseQuery = Equipamento::query()
+            ->where('empresa_id', $empresaId);
+
+        $indicadores = [
+            'total' => (clone $baseQuery)->count(),
+            'ativos' => (clone $baseQuery)->where('ativo', true)->count(),
+            'online' => (clone $baseQuery)
+                ->where('ativo', true)
+                ->where('ultima_conexao_em', '>=', now()->subMinutes(10))
+                ->count(),
+            'offline' => (clone $baseQuery)
+                ->where('ativo', true)
+                ->where(function ($query) {
+                    $query->whereNull('ultima_conexao_em')
+                        ->orWhere('ultima_conexao_em', '<', now()->subMinutes(10));
+                })
+                ->count(),
+        ];
+
+        $items = (clone $baseQuery)
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($subQuery) use ($search) {
+                    $subQuery->where('nome', 'like', "%{$search}%")
+                        ->orWhere('fabricante', 'like', "%{$search}%")
+                        ->orWhere('modelo', 'like', "%{$search}%")
+                        ->orWhere('numero_serie', 'like', "%{$search}%")
+                        ->orWhere('ip', 'like', "%{$search}%")
+                        ->orWhere('mac', 'like', "%{$search}%");
+                });
+            })
+            ->latest()
+            ->paginate(15)
+            ->withQueryString();
+
+        $equipamentosImportacao = (clone $baseQuery)
+            ->where('ativo', true)
+            ->orderBy('nome')
+            ->get(['id', 'nome', 'modelo']);
+
+        return view('equipamentos.index', compact(
+            'items',
+            'indicadores',
+            'equipamentosImportacao',
+            'search'
+        ));
     }
 
     public function create()
     {
         abort_unless(auth()->user()->empresa_id, 403, 'Vincule uma empresa ao usuário.');
+
         return view('equipamentos.create');
     }
 
@@ -43,6 +85,7 @@ class EquipamentoController extends Controller
     public function edit(Equipamento $equipamento)
     {
         $this->autorizar($equipamento);
+
         return view('equipamentos.edit', compact('equipamento'));
     }
 
@@ -56,6 +99,7 @@ class EquipamentoController extends Controller
         }
 
         $equipamento->update($data);
+
         return redirect()->route('equipamentos.index')->with('success', 'Equipamento atualizado com sucesso.');
     }
 
@@ -63,6 +107,7 @@ class EquipamentoController extends Controller
     {
         $this->autorizar($equipamento);
         $equipamento->delete();
+
         return redirect()->route('equipamentos.index')->with('success', 'Equipamento excluído com sucesso.');
     }
 
@@ -90,6 +135,7 @@ class EquipamentoController extends Controller
 
         try {
             $adapter->testarConexao($equipamento);
+
             return back()->with('success', 'Conexão com o REP iDClass realizada com sucesso.');
         } catch (\Throwable $e) {
             $equipamento->forceFill([
@@ -109,10 +155,15 @@ class EquipamentoController extends Controller
         $this->autorizar($equipamento);
 
         try {
-            $r = $service->sincronizar($equipamento, $request->boolean('processar', true));
+            $resultado = $service->sincronizar($equipamento, $request->boolean('processar', true));
+
             return back()->with('success', sprintf(
                 'Sincronização concluída: %d recebidas, %d novas, %d duplicadas, %d processadas e %d erros.',
-                $r['recebidas'], $r['novas'], $r['duplicadas'], $r['processadas'], $r['erros']
+                $resultado['recebidas'],
+                $resultado['novas'],
+                $resultado['duplicadas'],
+                $resultado['processadas'],
+                $resultado['erros']
             ));
         } catch (\Throwable $e) {
             return back()->with('error', 'Falha na sincronização: '.$e->getMessage());

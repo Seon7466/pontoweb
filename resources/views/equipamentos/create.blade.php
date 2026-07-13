@@ -1,1 +1,23 @@
-<x-app-layout><x-slot name="header"><h2 class="text-lg font-semibold text-slate-900">Novo Equipamento</h2></x-slot><x-pw.page-header title="Novo Equipamento" description="Preencha os dados abaixo para cadastrar." /><x-pw.card><form method="POST" action="{{ route('equipamentos.store') }}">@csrf @include('equipamentos.form')<div class="mt-6 flex justify-end gap-3"><x-pw.button :href="route('equipamentos.index')" variant="secondary">Cancelar</x-pw.button><x-pw.button type="submit" variant="success">Salvar</x-pw.button></div></form></x-pw.card></x-app-layout>
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="text-lg font-semibold text-slate-900">Novo equipamento</h2>
+    </x-slot>
+
+    <x-pw.page-header
+        title="Novo equipamento"
+        description="Cadastre um relógio de ponto ou agente de integração."
+    />
+
+    <x-pw.flash />
+
+    <form method="POST" action="{{ route('equipamentos.store') }}">
+        @csrf
+
+        @include('equipamentos.form')
+
+        <x-pw.form-actions
+            :cancel-href="route('equipamentos.index')"
+            submit-label="Cadastrar equipamento"
+        />
+    </form>
+</x-app-layout>
