@@ -8,6 +8,7 @@ use App\Http\Controllers\EquipamentoController;
 use App\Http\Controllers\EscalaController;
 use App\Http\Controllers\FuncionarioController;
 use App\Http\Controllers\HorarioController;
+use App\Http\Controllers\Master\DashboardController as MasterDashboardController;
 use App\Http\Controllers\PontoController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -38,5 +39,14 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+
+Route::prefix('master')
+    ->name('master.')
+    ->middleware(['auth', 'verified', 'master'])
+    ->group(function () {
+        Route::get('/dashboard', [MasterDashboardController::class, 'index'])
+            ->name('dashboard');
+    });
 
 require __DIR__.'/auth.php';

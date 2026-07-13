@@ -1,0 +1,1 @@
+<footer class="border-t border-slate-200 bg-white px-4 py-4 text-center text-xs text-slate-500 sm:px-6 lg:px-8">PontoWeb · Plataforma de Gestão da Jornada <span class="mx-2">•</span> v{{ config('app.version','0.8.0') }}</footer>

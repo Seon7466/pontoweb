@@ -1,46 +1,5 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-gray-800">
-            Painel PontoWeb
-        </h2>
-    </x-slot>
-
-    <div class="mx-auto max-w-7xl">
-        <div class="mb-6 flex flex-wrap gap-3">
-            <a href="{{ route('funcionarios.index') }}"
-               class="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                Funcionários
-            </a>
-        </div>
-
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-            <div class="rounded-lg bg-white p-6 shadow">
-                <h3 class="text-sm font-medium text-gray-500">Empresas</h3>
-                <p class="mt-2 text-3xl font-bold text-gray-900">
-                    {{ $totalEmpresas ?? 0 }}
-                </p>
-            </div>
-
-            <div class="rounded-lg bg-white p-6 shadow">
-                <h3 class="text-sm font-medium text-gray-500">Funcionários</h3>
-                <p class="mt-2 text-3xl font-bold text-gray-900">
-                    {{ $totalFuncionarios ?? 0 }}
-                </p>
-            </div>
-
-            <div class="rounded-lg bg-white p-6 shadow">
-                <h3 class="text-sm font-medium text-gray-500">Batidas Hoje</h3>
-                <p class="mt-2 text-3xl font-bold text-gray-900">
-                    {{ $batidasHoje ?? 0 }}
-                </p>
-            </div>
-
-            <div class="rounded-lg bg-white p-6 shadow">
-                <h3 class="text-sm font-medium text-gray-500">Pendências</h3>
-                <p class="mt-2 text-3xl font-bold text-gray-900">
-                    {{ $totalPendencias ?? 0 }}
-                </p>
-            </div>
-        </div>
-    </div>
+<x-app-layout><x-slot name="header"><div><h2 class="text-lg font-semibold text-slate-900">Dashboard</h2><p class="text-xs text-slate-500">Visão geral da operação</p></div></x-slot>
+<x-pw.page-header title="Painel PontoWeb" description="Acompanhe os principais indicadores da sua empresa."><x-slot name="actions"><x-pw.button :href="route('funcionarios.create')">+ Novo funcionário</x-pw.button></x-slot></x-pw.page-header>
+<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"><x-pw.stat-card label="Empresas" :value="$totalEmpresas ?? 0" tone="brand"/><x-pw.stat-card label="Funcionários" :value="$totalFuncionarios ?? 0" tone="success"/><x-pw.stat-card label="Batidas hoje" :value="$batidasHoje ?? 0" tone="neutral"/><x-pw.stat-card label="Pendências" :value="$totalPendencias ?? 0" tone="warning"/></div>
+<div class="mt-6 grid gap-6 lg:grid-cols-2"><x-pw.card><h3 class="font-semibold text-slate-900">Ações rápidas</h3><div class="mt-4 grid gap-3 sm:grid-cols-2"><x-pw.button :href="route('ponto.index')" variant="secondary">Consultar batidas</x-pw.button><x-pw.button :href="route('equipamentos.index')" variant="secondary">Equipamentos</x-pw.button></div></x-pw.card><x-pw.card><h3 class="font-semibold text-slate-900">Status do sistema</h3><p class="mt-2 text-sm text-slate-500">Ambiente operacional e pronto para receber novas marcações.</p><div class="mt-4"><x-pw.badge variant="success">Operacional</x-pw.badge></div></x-pw.card></div>
 </x-app-layout>

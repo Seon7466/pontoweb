@@ -1,0 +1,2 @@
+@props(['label','name','checked'=>false,'help'=>null])
+<label class="flex items-start gap-3"><input type="hidden" name="{{ $name }}" value="0"><input type="checkbox" id="{{ $name }}" name="{{ $name }}" value="1" @checked(old($name,$checked)) {{ $attributes->merge(['class'=>'mt-0.5 rounded border-slate-300 text-brand-600 focus:ring-brand-500']) }}><span><span class="block text-sm font-medium text-slate-700">{{ $label }}</span>@if($help)<span class="mt-0.5 block text-xs text-slate-500">{{ $help }}</span>@endif</span></label>

@@ -1,66 +1,17 @@
-<aside class="min-h-screen w-64 flex-shrink-0 bg-gray-900 text-white">
-    <div class="border-b border-gray-700 p-6">
-        <a href="{{ route('dashboard') }}" class="text-2xl font-bold text-white">
-            PontoWeb
-        </a>
-    </div>
-
-    <nav class="space-y-2 p-4">
-        <a href="{{ route('dashboard') }}"
-           class="block rounded px-4 py-2 transition hover:bg-gray-700 {{ request()->routeIs('dashboard') ? 'bg-gray-700' : '' }}">
-            Painel
-        </a>
-
-        <div class="mt-5 px-1 text-xs uppercase tracking-wide text-gray-400">
-            Cadastros
-        </div>
-
-        <a href="{{ route('empresas.index') }}"
-           class="block rounded px-4 py-2 transition hover:bg-gray-700 {{ request()->routeIs('empresas.*') ? 'bg-gray-700' : '' }}">
-            Empresa
-        </a>
-
-        <a href="/departamentos"
-   class="block rounded px-4 py-2 transition hover:bg-gray-700 {{ request()->is('departamentos*') ? 'bg-gray-700' : '' }}">
-    Departamentos
-</a>
-
-        <a href="{{ route('cargos.index') }}"
-           class="block rounded px-4 py-2 transition hover:bg-gray-700 {{ request()->routeIs('cargos.*') ? 'bg-gray-700' : '' }}">
-            Cargos
-        </a>
-
-        <a href="{{ route('horarios.index') }}"
-           class="block rounded px-4 py-2 transition hover:bg-gray-700 {{ request()->routeIs('horarios.*') ? 'bg-gray-700' : '' }}">
-            Horários
-        </a>
-
-        <a href="{{ route('escalas.index') }}"
-           class="block rounded px-4 py-2 transition hover:bg-gray-700 {{ request()->routeIs('escalas.*') ? 'bg-gray-700' : '' }}">
-            Escalas
-        </a>
-
-        <a href="{{ route('funcionarios.index') }}"
-           class="block rounded px-4 py-2 transition hover:bg-gray-700 {{ request()->routeIs('funcionarios.*') ? 'bg-gray-700' : '' }}">
-            Funcionários
-        </a>
-
-        <div class="mt-5 px-1 text-xs uppercase tracking-wide text-gray-400">
-            Ponto
-        </div>
-
-        <a href="{{ route('ponto.index') }}"
-           class="block rounded px-4 py-2 transition hover:bg-gray-700 {{ request()->routeIs('ponto.*') ? 'bg-gray-700' : '' }}">
-            Batidas
-        </a>
-
-        <a href="{{ route('equipamentos.index') }}"
-           class="block rounded px-4 py-2 transition hover:bg-gray-700 {{ request()->routeIs('equipamentos.*') ? 'bg-gray-700' : '' }}">
-            Equipamentos
-        </a>
-
-        <span class="block cursor-not-allowed rounded px-4 py-2 text-gray-500">
-            Relatórios (em breve)
-        </span>
-    </nav>
+<aside class="fixed inset-y-0 left-0 z-50 flex w-72 -translate-x-full flex-col bg-slate-900 text-white shadow-xl transition-all duration-200 lg:translate-x-0" :class="{'translate-x-0':sidebarOpen,'lg:w-20':sidebarCollapsed,'lg:w-72':!sidebarCollapsed}">
+ <div class="flex h-16 items-center justify-between border-b border-slate-800 px-5"><a href="{{ route('dashboard') }}" class="flex items-center gap-3 overflow-hidden"><span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-600 font-bold">PW</span><span class="text-lg font-bold" x-show="!sidebarCollapsed">PontoWeb</span></a><button class="rounded-lg p-2 text-slate-400 hover:bg-slate-800 hover:text-white lg:hidden" @click="sidebarOpen=false">✕</button></div>
+ <nav class="flex-1 space-y-6 overflow-y-auto px-3 py-5">
+  @php($link='flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition')
+  <div class="space-y-1"><a href="{{ route('dashboard') }}" class="{{ $link }} {{ request()->routeIs('dashboard') ? 'bg-brand-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}"><span class="w-5 text-center">⌂</span><span x-show="!sidebarCollapsed">Dashboard</span></a></div>
+  <div><p class="mb-2 px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500" x-show="!sidebarCollapsed">Cadastros</p><div class="space-y-1">
+   @foreach([['empresas.*','empresas.index','Empresa','▣'],['departamentos.*','departamentos.index','Departamentos','▤'],['cargos.*','cargos.index','Cargos','◆'],['horarios.*','horarios.index','Horários','◷'],['escalas.*','escalas.index','Escalas','▦'],['funcionarios.*','funcionarios.index','Funcionários','♟']] as [$pattern,$route,$label,$icon])
+   <a href="{{ route($route) }}" class="{{ $link }} {{ request()->routeIs($pattern) ? 'bg-brand-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}"><span class="w-5 text-center">{{ $icon }}</span><span x-show="!sidebarCollapsed">{{ $label }}</span></a>@endforeach
+  </div></div>
+  <div><p class="mb-2 px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500" x-show="!sidebarCollapsed">Ponto</p><div class="space-y-1">
+   <a href="{{ route('ponto.index') }}" class="{{ $link }} {{ request()->routeIs('ponto.*') ? 'bg-brand-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}"><span class="w-5 text-center">◉</span><span x-show="!sidebarCollapsed">Batidas</span></a>
+   <a href="{{ route('equipamentos.index') }}" class="{{ $link }} {{ request()->routeIs('equipamentos.*') ? 'bg-brand-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}"><span class="w-5 text-center">▥</span><span x-show="!sidebarCollapsed">Equipamentos</span></a>
+  </div></div>
+  @if(auth()->user()?->is_master)<div><p class="mb-2 px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500" x-show="!sidebarCollapsed">Plataforma</p><a href="{{ route('master.dashboard') }}" class="{{ $link }} {{ request()->routeIs('master.*') ? 'bg-brand-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}"><span class="w-5 text-center">★</span><span x-show="!sidebarCollapsed">Painel Master</span></a></div>@endif
+ </nav>
+ <div class="border-t border-slate-800 p-3"><button @click="sidebarCollapsed=!sidebarCollapsed" class="hidden w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-400 hover:bg-slate-800 hover:text-white lg:flex"><span class="w-5 text-center">⇤</span><span x-show="!sidebarCollapsed">Recolher menu</span></button></div>
 </aside>
