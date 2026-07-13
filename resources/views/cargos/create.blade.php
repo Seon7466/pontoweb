@@ -1,1 +1,23 @@
-<x-app-layout><x-slot name="header"><h2 class="text-lg font-semibold text-slate-900">Novo Cargo</h2></x-slot><x-pw.page-header title="Novo Cargo" description="Preencha os dados abaixo para cadastrar." /><x-pw.card><form method="POST" action="{{ route('cargos.store') }}">@csrf @include('cargos.form')<div class="mt-6 flex justify-end gap-3"><x-pw.button :href="route('cargos.index')" variant="secondary">Cancelar</x-pw.button><x-pw.button type="submit" variant="success">Salvar</x-pw.button></div></form></x-pw.card></x-app-layout>
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="text-lg font-semibold text-slate-900">Novo cargo</h2>
+    </x-slot>
+
+    <x-pw.page-header
+        title="Novo cargo"
+        description="Cadastre uma função e, opcionalmente, associe-a a um departamento."
+    />
+
+    <x-pw.card class="max-w-5xl">
+        <form method="POST" action="{{ route('cargos.store') }}">
+            @csrf
+
+            @include('cargos.form')
+
+            <x-pw.form-actions
+                :cancel-href="route('cargos.index')"
+                submit-label="Cadastrar cargo"
+            />
+        </form>
+    </x-pw.card>
+</x-app-layout>
