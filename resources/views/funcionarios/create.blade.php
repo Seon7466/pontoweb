@@ -1,1 +1,14 @@
-<x-app-layout><x-slot name="header"><h2 class="text-lg font-semibold text-slate-900">Novo Funcionário</h2></x-slot><x-pw.page-header title="Novo Funcionário" description="Preencha os dados abaixo para cadastrar." /><x-pw.card><form method="POST" action="{{ route('funcionarios.store') }}">@csrf @include('funcionarios.form')<div class="mt-6 flex justify-end gap-3"><x-pw.button :href="route('funcionarios.index')" variant="secondary">Cancelar</x-pw.button><x-pw.button type="submit" variant="success">Salvar</x-pw.button></div></form></x-pw.card></x-app-layout>
+<x-app-layout>
+    <x-slot name="header"><h2 class="text-lg font-semibold text-slate-900">Novo funcionário</h2></x-slot>
+
+    <x-pw.page-header title="Novo funcionário" description="Cadastre o colaborador e configure seu vínculo e jornada." />
+    <x-pw.flash />
+
+    <x-pw.card>
+        <form method="POST" action="{{ route('funcionarios.store') }}">
+            @csrf
+            @include('funcionarios.form')
+            <x-pw.form-actions :cancel-href="route('funcionarios.index')" submit-label="Cadastrar funcionário" />
+        </form>
+    </x-pw.card>
+</x-app-layout>

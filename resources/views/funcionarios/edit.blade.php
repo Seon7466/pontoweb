@@ -1,1 +1,15 @@
-<x-app-layout><x-slot name="header"><h2 class="text-lg font-semibold text-slate-900">Editar Funcionário</h2></x-slot><x-pw.page-header title="Editar Funcionário" description="Atualize os dados do registro." /><x-pw.card><form method="POST" action="{{ route('funcionarios.update', $funcionario) }}">@csrf @method('PUT') @include('funcionarios.form')<div class="mt-6 flex justify-end gap-3"><x-pw.button :href="route('funcionarios.index')" variant="secondary">Cancelar</x-pw.button><x-pw.button type="submit" variant="success">Salvar alterações</x-pw.button></div></form></x-pw.card></x-app-layout>
+<x-app-layout>
+    <x-slot name="header"><h2 class="text-lg font-semibold text-slate-900">Editar funcionário</h2></x-slot>
+
+    <x-pw.page-header title="Editar funcionário" :description="'Atualize os dados de ' . $funcionario->nome . '.'" />
+    <x-pw.flash />
+
+    <x-pw.card>
+        <form method="POST" action="{{ route('funcionarios.update', $funcionario) }}">
+            @csrf
+            @method('PUT')
+            @include('funcionarios.form')
+            <x-pw.form-actions :cancel-href="route('funcionarios.index')" submit-label="Salvar alterações" />
+        </form>
+    </x-pw.card>
+</x-app-layout>

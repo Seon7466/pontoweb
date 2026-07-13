@@ -1,1 +1,15 @@
-<x-app-layout><x-slot name="header"><h2 class="text-lg font-semibold text-slate-900">Editar Escala</h2></x-slot><x-pw.page-header title="Editar Escala" description="Atualize os dados do registro." /><x-pw.card><form method="POST" action="{{ route('escalas.update', $item) }}">@csrf @method('PUT') @include('escalas.form')<div class="mt-6 flex justify-end gap-3"><x-pw.button :href="route('escalas.index')" variant="secondary">Cancelar</x-pw.button><x-pw.button type="submit" variant="success">Salvar alterações</x-pw.button></div></form></x-pw.card></x-app-layout>
+<x-app-layout>
+    <x-slot name="header"><h2 class="text-lg font-semibold text-slate-900">Editar escala</h2></x-slot>
+
+    <x-pw.page-header title="Editar escala" :description="'Atualize a escala ' . $item->descricao . '.'" />
+    <x-pw.flash />
+
+    <x-pw.card>
+        <form method="POST" action="{{ route('escalas.update', $item) }}">
+            @csrf
+            @method('PUT')
+            @include('escalas.form')
+            <x-pw.form-actions :cancel-href="route('escalas.index')" submit-label="Salvar alterações" />
+        </form>
+    </x-pw.card>
+</x-app-layout>

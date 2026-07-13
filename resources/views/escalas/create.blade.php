@@ -1,1 +1,14 @@
-<x-app-layout><x-slot name="header"><h2 class="text-lg font-semibold text-slate-900">Novo Escala</h2></x-slot><x-pw.page-header title="Novo Escala" description="Preencha os dados abaixo para cadastrar." /><x-pw.card><form method="POST" action="{{ route('escalas.store') }}">@csrf @include('escalas.form')<div class="mt-6 flex justify-end gap-3"><x-pw.button :href="route('escalas.index')" variant="secondary">Cancelar</x-pw.button><x-pw.button type="submit" variant="success">Salvar</x-pw.button></div></form></x-pw.card></x-app-layout>
+<x-app-layout>
+    <x-slot name="header"><h2 class="text-lg font-semibold text-slate-900">Nova escala</h2></x-slot>
+
+    <x-pw.page-header title="Nova escala" description="Configure os dias e o tipo de jornada." />
+    <x-pw.flash />
+
+    <x-pw.card>
+        <form method="POST" action="{{ route('escalas.store') }}">
+            @csrf
+            @include('escalas.form')
+            <x-pw.form-actions :cancel-href="route('escalas.index')" submit-label="Cadastrar escala" />
+        </form>
+    </x-pw.card>
+</x-app-layout>
