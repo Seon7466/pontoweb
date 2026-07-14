@@ -130,6 +130,11 @@
                         <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7.5h16M4 12h16M4 16.5h10"/><rect x="3" y="4" width="18" height="16" rx="2"/></svg>
                         <span x-show="! sidebarCollapsed" x-transition.opacity>Planos</span>
                     </a>
+
+                    <a href="{{ route('master.licencas.index') }}" class="{{ $navLink }} {{ request()->routeIs('master.licencas.*') ? $navActive : $navIdle }}">
+                        <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7 4h10a2 2 0 0 1 2 2v14l-7-3-7 3V6a2 2 0 0 1 2-2Z"/></svg>
+                        <span x-show="! sidebarCollapsed" x-transition.opacity>Licenças</span>
+                    </a>
                 </div>
             </div>
         @endif

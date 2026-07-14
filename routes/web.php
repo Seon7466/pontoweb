@@ -10,6 +10,7 @@ use App\Http\Controllers\FuncionarioController;
 use App\Http\Controllers\HorarioController;
 use App\Http\Controllers\Master\DashboardController as MasterDashboardController;
 use App\Http\Controllers\Master\PlanoController as MasterPlanoController;
+use App\Http\Controllers\Master\LicencaController as MasterLicencaController;
 use App\Http\Controllers\PontoController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -50,6 +51,9 @@ Route::prefix('master')
             ->name('dashboard');
 
         Route::resource('planos', MasterPlanoController::class)->except('show');
+        Route::post('licencas/{licenca}/renovar', [MasterLicencaController::class, 'renovar'])->name('licencas.renovar');
+        Route::post('licencas/{licenca}/regenerar-token', [MasterLicencaController::class, 'regenerarToken'])->name('licencas.regenerar-token');
+        Route::resource('licencas', MasterLicencaController::class)->except(['show', 'destroy']);
     });
 
 require __DIR__.'/auth.php';

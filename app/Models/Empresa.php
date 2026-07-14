@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Empresa extends Model
 {
@@ -29,6 +30,11 @@ class Empresa extends Model
         'ativo' => 'boolean',
     ];
 
+    public function licenca(): HasOne
+    {
+        return $this->hasOne(Licenca::class);
+    }
+
     public function usuarios()
     {
         return $this->hasMany(User::class);
@@ -52,6 +58,11 @@ class Empresa extends Model
     public function escalas()
     {
         return $this->hasMany(Escala::class);
+    }
+
+    public function equipamentos()
+    {
+        return $this->hasMany(Equipamento::class);
     }
 
     public function funcionarios()

@@ -13,6 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'master' => \App\Http\Middleware\EnsureUserIsMaster::class,
+            'licenca.ativa' => \App\Http\Middleware\EnsureEmpresaHasValidLicense::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
