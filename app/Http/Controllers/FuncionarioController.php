@@ -105,7 +105,6 @@ class FuncionarioController extends BaseCrudController
                 ->get(['id', 'nome', 'departamento_id']),
             'horarios' => Horario::query()
                 ->where('empresa_id', $empresaId)
-                ->where('ativo', true)
                 ->orderBy('descricao')
                 ->get(['id', 'descricao']),
             'escalas' => Escala::query()

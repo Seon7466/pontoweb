@@ -1,3 +1,6 @@
+@php
+    $funcionario = $funcionario ?? null;
+@endphp
 <div class="space-y-8">
     <x-pw.alert variant="info">
         Este funcionário será vinculado à empresa

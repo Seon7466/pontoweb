@@ -7,7 +7,7 @@
     <x-pw.card>
         <form method="POST" action="{{ route('funcionarios.store') }}">
             @csrf
-            @include('funcionarios.form')
+            @include('funcionarios.form', ['funcionario' => null])
             <x-pw.form-actions :cancel-href="route('funcionarios.index')" submit-label="Cadastrar funcionário" />
         </form>
     </x-pw.card>
