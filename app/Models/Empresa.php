@@ -69,4 +69,9 @@ class Empresa extends Model
     {
         return $this->hasMany(Funcionario::class);
     }
+
+    public function agentes()
+    {
+        return $this->hasMany(Agente::class);
+    }
 }

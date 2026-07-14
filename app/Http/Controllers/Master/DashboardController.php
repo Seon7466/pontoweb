@@ -9,6 +9,7 @@ use App\Models\Funcionario;
 use App\Models\Plano;
 use App\Models\Licenca;
 use App\Models\User;
+use App\Models\Agente;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
@@ -25,6 +26,8 @@ class DashboardController extends Controller
             'licencas' => Licenca::query()->count(),
             'licencas_ativas' => Licenca::query()->whereIn('status', ['ativa', 'teste'])->count(),
             'licencas_vencendo' => Licenca::query()->whereDate('termina_em', '>=', today())->whereDate('termina_em', '<=', today()->addDays(15))->count(),
+            'agentes' => Agente::query()->count(),
+            'agentes_online' => Agente::query()->where('last_seen_at', '>=', now()->subMinutes(5))->count(),
         ];
 
         return view('master.dashboard', compact('indicadores'));

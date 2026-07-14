@@ -11,6 +11,7 @@ use App\Http\Controllers\HorarioController;
 use App\Http\Controllers\Master\DashboardController as MasterDashboardController;
 use App\Http\Controllers\Master\PlanoController as MasterPlanoController;
 use App\Http\Controllers\Master\LicencaController as MasterLicencaController;
+use App\Http\Controllers\Master\AgenteController as MasterAgenteController;
 use App\Http\Controllers\PontoController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -54,6 +55,7 @@ Route::prefix('master')
         Route::post('licencas/{licenca}/renovar', [MasterLicencaController::class, 'renovar'])->name('licencas.renovar');
         Route::post('licencas/{licenca}/regenerar-token', [MasterLicencaController::class, 'regenerarToken'])->name('licencas.regenerar-token');
         Route::resource('licencas', MasterLicencaController::class)->except(['show', 'destroy']);
+        Route::resource('agentes', MasterAgenteController::class)->only(['index', 'show']);
     });
 
 require __DIR__.'/auth.php';

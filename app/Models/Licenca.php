@@ -57,6 +57,11 @@ class Licenca extends Model
         return $this->hasMany(LicencaHistorico::class)->latest();
     }
 
+    public function agentes(): HasMany
+    {
+        return $this->hasMany(Agente::class);
+    }
+
     public function getStatusEfetivoAttribute(): string
     {
         if (in_array($this->status, [self::STATUS_SUSPENSA, self::STATUS_CANCELADA], true)) {

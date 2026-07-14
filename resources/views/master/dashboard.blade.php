@@ -45,10 +45,10 @@
             <div class="mt-auto pt-5"><x-pw.button :href="route('master.licencas.index')" variant="secondary" size="sm">Abrir licenças</x-pw.button></div>
         </x-pw.card>
 
-        <x-pw.card>
-            <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Infraestrutura</p>
-            <h3 class="mt-2 text-lg font-semibold text-slate-900">Agentes</h3>
+        <x-pw.card class="flex flex-col">
+            <div class="flex items-start justify-between gap-3"><div><p class="text-xs font-semibold uppercase tracking-[0.16em] text-brand-600">Infraestrutura</p><h3 class="mt-2 text-lg font-semibold text-slate-900">Agentes</h3></div><x-pw.badge variant="success">{{ $indicadores['agentes_online'] ?? 0 }} online</x-pw.badge></div>
             <p class="mt-3 text-sm leading-6 text-slate-500">Monitoramento das instalações Windows e sincronizações com relógios.</p>
+            <div class="mt-auto pt-5"><x-pw.button :href="route('master.agentes.index')" variant="secondary" size="sm">Abrir agentes</x-pw.button></div>
         </x-pw.card>
     </div>
 </x-app-layout>

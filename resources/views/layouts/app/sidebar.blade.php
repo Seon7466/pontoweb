@@ -135,6 +135,11 @@
                         <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7 4h10a2 2 0 0 1 2 2v14l-7-3-7 3V6a2 2 0 0 1 2-2Z"/></svg>
                         <span x-show="! sidebarCollapsed" x-transition.opacity>Licenças</span>
                     </a>
+
+                    <a href="{{ route('master.agentes.index') }}" class="{{ $navLink }} {{ request()->routeIs('master.agentes.*') ? $navActive : $navIdle }}">
+                        <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path stroke-linecap="round" d="M7 9h.01M7 13h.01M11 9h6M11 13h6"/></svg>
+                        <span x-show="! sidebarCollapsed" x-transition.opacity>Agentes</span>
+                    </a>
                 </div>
             </div>
         @endif
