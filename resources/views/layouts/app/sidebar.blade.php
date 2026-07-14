@@ -120,10 +120,17 @@
                     Plataforma
                 </p>
 
-                <a href="{{ route('master.dashboard') }}" class="{{ $navLink }} {{ request()->routeIs('master.*') ? $navActive : $navIdle }}">
-                    <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m12 3 2.4 4.86 5.36.78-3.88 3.78.92 5.34L12 15.24 7.2 17.76l.92-5.34L4.24 8.64l5.36-.78L12 3Z"/></svg>
-                    <span x-show="! sidebarCollapsed" x-transition.opacity>Painel Master</span>
-                </a>
+                <div class="space-y-1">
+                    <a href="{{ route('master.dashboard') }}" class="{{ $navLink }} {{ request()->routeIs('master.dashboard') ? $navActive : $navIdle }}">
+                        <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m12 3 2.4 4.86 5.36.78-3.88 3.78.92 5.34L12 15.24 7.2 17.76l.92-5.34L4.24 8.64l5.36-.78L12 3Z"/></svg>
+                        <span x-show="! sidebarCollapsed" x-transition.opacity>Painel Master</span>
+                    </a>
+
+                    <a href="{{ route('master.planos.index') }}" class="{{ $navLink }} {{ request()->routeIs('master.planos.*') ? $navActive : $navIdle }}">
+                        <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7.5h16M4 12h16M4 16.5h10"/><rect x="3" y="4" width="18" height="16" rx="2"/></svg>
+                        <span x-show="! sidebarCollapsed" x-transition.opacity>Planos</span>
+                    </a>
+                </div>
             </div>
         @endif
     </nav>

@@ -20,6 +20,7 @@ class DashboardController extends Controller
             'equipamentos' => Equipamento::query()->count(),
             'usuarios' => User::query()->count(),
             'planos' => Plano::query()->count(),
+            'planos_ativos' => Plano::query()->where('ativo', true)->count(),
         ];
 
         return view('master.dashboard', compact('indicadores'));
