@@ -30,3 +30,9 @@ Thumbs.db
 *.sql
 
 Acesso*.txt
+
+.phpunit.result.cache
+
+/Pontoweb/
+
+/PontoWebAgent/
