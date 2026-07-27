@@ -2,7 +2,6 @@
     <x-slot name="header"><h2 class="text-lg font-semibold text-slate-900">Editar escala</h2></x-slot>
 
     <x-pw.page-header title="Editar escala" :description="'Atualize a escala ' . $item->descricao . '.'" />
-    <x-pw.flash />
 
     <x-pw.card>
         <form method="POST" action="{{ route('escalas.update', $item) }}">

@@ -8,8 +8,6 @@
         :description="'Atualize a configuração de '.$equipamento->nome.'.'"
     />
 
-    <x-pw.flash />
-
     <form method="POST" action="{{ route('equipamentos.update', $equipamento) }}">
         @csrf
         @method('PUT')

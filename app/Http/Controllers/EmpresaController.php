@@ -71,4 +71,22 @@ class EmpresaController extends BaseCrudController
                 ->with('error', 'Erro ao cadastrar a empresa.');
         }
     }
+    public function destroy($id)
+    {
+        try {
+            $empresa = Empresa::findOrFail($id);
+
+            $empresa->delete();
+
+            return redirect()
+                ->route('empresas.index')
+                ->with('success', 'Empresa excluída com sucesso.');
+        } catch (\Throwable $e) {
+            report($e);
+
+            return redirect()
+                ->route('empresas.index')
+                ->with('error', 'Não foi possível excluir a empresa.');
+        }
+    }
 }

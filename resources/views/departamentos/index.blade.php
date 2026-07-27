@@ -5,8 +5,6 @@
         </h2>
     </x-slot>
 
-    <x-pw.flash />
-
     <x-pw.page-header
         title="Departamentos"
         description="Organize os setores e responsáveis da empresa."

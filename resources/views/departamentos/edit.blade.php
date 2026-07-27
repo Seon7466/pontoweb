@@ -3,8 +3,6 @@
         <h2 class="text-lg font-semibold text-slate-900">Editar departamento</h2>
     </x-slot>
 
-    <x-pw.flash />
-
     <x-pw.page-header
         title="Editar departamento"
         :description="$item->nome"

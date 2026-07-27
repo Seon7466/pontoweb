@@ -8,8 +8,6 @@
         description="Cadastre um relógio de ponto ou agente de integração."
     />
 
-    <x-pw.flash />
-
     <form method="POST" action="{{ route('equipamentos.store') }}">
         @csrf
 

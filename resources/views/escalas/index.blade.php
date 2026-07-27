@@ -5,8 +5,6 @@
         </h2>
     </x-slot>
 
-    <x-pw.flash />
-
     <x-pw.page-header title="Escalas" description="Organize os dias de trabalho e acompanhe os funcionários vinculados.">
         <x-slot name="actions">
             <x-pw.button :href="route('escalas.create')" variant="primary">

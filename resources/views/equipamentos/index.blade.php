@@ -14,8 +14,6 @@
         </x-slot>
     </x-pw.page-header>
 
-    <x-pw.flash />
-
     <x-pw.summary-grid>
         <x-pw.stat-card label="Equipamentos" :value="$indicadores['total']" hint="Total cadastrado" tone="brand" />
         <x-pw.stat-card label="Ativos" :value="$indicadores['ativos']" hint="Disponíveis para operação" tone="success" />

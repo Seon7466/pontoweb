@@ -3,8 +3,6 @@
         <h2 class="text-lg font-semibold text-slate-900">Editar empresa</h2>
     </x-slot>
 
-    <x-pw.flash />
-
     <x-pw.page-header
         title="Editar empresa"
         :description="$item->nome_fantasia"
