@@ -1,6 +1,8 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-lg font-semibold text-slate-900">Departamentos</h2>
+        <h2 class="text-lg font-semibold text-slate-900">
+            Departamentos
+        </h2>
     </x-slot>
 
     <x-pw.flash />
@@ -11,9 +13,16 @@
     >
         <x-slot name="actions">
             <x-pw.button :href="route('departamentos.create')">
-                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg
+                    class="h-4 w-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                >
                     <path d="M12 5v14M5 12h14" />
                 </svg>
+
                 Novo departamento
             </x-pw.button>
         </x-slot>
@@ -36,7 +45,7 @@
 
         <x-pw.stat-card
             label="Ativos na página"
-            :value="$items->getCollection()->where('ativo', true)->count()"
+            :value="$items->where('ativo', true)->count()"
             hint="Departamentos disponíveis"
             tone="success"
         />
@@ -47,7 +56,9 @@
         description="Use a pesquisa para localizar um setor ou responsável."
     >
         <x-slot name="actions">
-            <x-pw.search-form placeholder="Buscar departamento ou responsável" />
+            <x-pw.search-form
+                placeholder="Buscar departamento ou responsável"
+            />
         </x-slot>
 
         <table class="pw-table min-w-[720px]">
@@ -65,23 +76,39 @@
                 @forelse ($items as $departamento)
                     <tr>
                         <td>
-                            <div class="font-semibold text-slate-900">{{ $departamento->nome }}</div>
-                            <div class="mt-0.5 text-xs text-slate-500">ID #{{ $departamento->id }}</div>
+                            <div class="font-semibold text-slate-900">
+                                {{ $departamento->nome }}
+                            </div>
+
+                            <div class="mt-0.5 text-xs text-slate-500">
+                                ID #{{ $departamento->id }}
+                            </div>
                         </td>
-                        <td>{{ $departamento->responsavel ?: 'Não definido' }}</td>
+
+                        <td>
+                            {{ $departamento->responsavel ?: 'Não informado' }}
+                        </td>
+
                         <td>
                             <div class="text-sm text-slate-700">
-                                {{ $departamento->cargos_count }} cargo(s)
+                                {{ $departamento->cargos_count }}
+                                cargo(s)
                             </div>
+
                             <div class="mt-0.5 text-xs text-slate-500">
-                                {{ $departamento->funcionarios_count }} funcionário(s)
+                                {{ $departamento->funcionarios_count }}
+                                funcionário(s)
                             </div>
                         </td>
+
                         <td>
-                            <x-pw.badge :variant="$departamento->ativo ? 'success' : 'neutral'">
-                                {{ $departamento->ativo ? 'Ativo' : 'Inativo' }}
+                            <x-pw.badge
+                                :variant="$departamento->ativo ? 'success' : 'neutral'"
+                            >
+                                {{ $departamento->status_label }}
                             </x-pw.badge>
                         </td>
+
                         <td>
                             <div class="flex justify-end gap-1">
                                 <x-pw.button
@@ -99,7 +126,13 @@
                                 >
                                     @csrf
                                     @method('DELETE')
-                                    <x-pw.button type="submit" variant="ghost" size="sm" class="!text-red-600 hover:!bg-red-50">
+
+                                    <x-pw.button
+                                        type="submit"
+                                        variant="ghost"
+                                        size="sm"
+                                        class="!text-red-600 hover:!bg-red-50"
+                                    >
                                         Excluir
                                     </x-pw.button>
                                 </form>
@@ -113,7 +146,9 @@
                                 title="Nenhum departamento encontrado"
                                 description="Cadastre o primeiro departamento para organizar cargos e funcionários."
                             >
-                                <x-pw.button :href="route('departamentos.create')">
+                                <x-pw.button
+                                    :href="route('departamentos.create')"
+                                >
                                     Novo departamento
                                 </x-pw.button>
                             </x-pw.empty-state>

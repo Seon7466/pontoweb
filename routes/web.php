@@ -16,7 +16,7 @@ use App\Http\Controllers\PontoController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => view('welcome'));
+Route::get('/', fn() => view('welcome'));
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -29,6 +29,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('funcionarios', FuncionarioController::class);
 
     Route::get('ponto', [PontoController::class, 'index'])->name('ponto.index');
+    Route::get(
+        'ponto/espelho',
+        [PontoController::class, 'espelho']
+    )->name('ponto.espelho');
+
+    Route::get(
+        'ponto/espelho/pdf',
+        [PontoController::class, 'espelhoPdf']
+    )->name('ponto.espelho.pdf');
+
     Route::post('ponto/contingencia', [PontoController::class, 'registrarContingencia'])->name('ponto.contingencia');
 
     Route::post('equipamentos/importar', [EquipamentoController::class, 'importar'])->name('equipamentos.importar');
@@ -58,4 +68,4 @@ Route::prefix('master')
         Route::resource('agentes', MasterAgenteController::class)->only(['index', 'show']);
     });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

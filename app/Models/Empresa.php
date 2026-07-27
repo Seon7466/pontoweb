@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -14,28 +15,42 @@ class Empresa extends Model
         'razao_social',
         'nome_fantasia',
         'cnpj',
-        'inscricao_estadual',
-        'telefone',
         'email',
-        'cep',
+        'telefone',
         'endereco',
         'numero',
         'bairro',
         'cidade',
         'estado',
+        'cep',
+        'logo',
         'ativo',
+        'uuid',
     ];
 
     protected $casts = [
         'ativo' => 'boolean',
     ];
 
+    public function getTotalFuncionariosAttribute(): int
+    {
+        return $this->funcionarios()->count();
+    }
+
+    public function getTotalEquipamentosAttribute(): int
+    {
+        return $this->equipamentos()->count();
+    }
+
+    public function getTotalUsuariosAttribute(): int
+    {
+        return $this->usuarios()->count();
+    }
     public function licenca(): HasOne
     {
         return $this->hasOne(Licenca::class);
     }
-
-    public function usuarios()
+    public function usuarios(): HasMany
     {
         return $this->hasMany(User::class);
     }

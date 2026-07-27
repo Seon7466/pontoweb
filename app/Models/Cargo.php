@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Cargo extends Model
 {
@@ -17,34 +19,40 @@ class Cargo extends Model
         'nome',
         'cbo',
         'descricao',
-        'ativo'
+        'ativo',
     ];
 
-    protected $casts = [
-        'ativo' => 'boolean'
-    ];
+    protected function casts(): array
+    {
+        return [
+            'ativo' => 'boolean',
+        ];
+    }
 
-    /**
-     * Relacionamento com Empresa
-     */
-    public function empresa()
+    public function empresa(): BelongsTo
     {
         return $this->belongsTo(Empresa::class);
     }
 
-    /**
-     * Relacionamento com Departamento
-     */
-    public function departamento()
+    public function departamento(): BelongsTo
     {
         return $this->belongsTo(Departamento::class);
     }
 
-    /**
-     * Funcionários desse cargo
-     */
-    public function funcionarios()
+    public function funcionarios(): HasMany
     {
         return $this->hasMany(Funcionario::class);
+    }
+
+    public function getStatusLabelAttribute(): string
+    {
+        return $this->ativo
+            ? 'Ativo'
+            : 'Inativo';
+    }
+
+    public function getNomeCompletoAttribute(): string
+    {
+        return $this->nome;
     }
 }

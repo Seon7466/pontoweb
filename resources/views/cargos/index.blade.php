@@ -1,7 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-lg font-semibold text-slate-900">Cargos</h2>
+        <h2 class="text-lg font-semibold text-slate-900">
+            Cargos
+        </h2>
     </x-slot>
+
+    <x-pw.flash />
 
     <x-pw.page-header
         title="Cargos"
@@ -9,25 +13,32 @@
     >
         <x-slot name="actions">
             <x-pw.button :href="route('cargos.create')">
-                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg
+                    class="h-4 w-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                >
                     <path d="M12 5v14M5 12h14" />
                 </svg>
+
                 Novo cargo
             </x-pw.button>
         </x-slot>
     </x-pw.page-header>
 
-    <x-pw.flash />
-
     <x-pw.table-card
         title="Cargos cadastrados"
-        description="{{ $items->total() }} {{ $items->total() === 1 ? 'cargo encontrado' : 'cargos encontrados' }}"
+        :description="$items->total() . ' ' . ($items->total() === 1 ? 'cargo encontrado' : 'cargos encontrados')"
     >
         <x-slot name="actions">
-            <x-pw.search-form placeholder="Buscar por cargo, departamento ou CBO" />
+            <x-pw.search-form
+                placeholder="Buscar por cargo, departamento ou CBO"
+            />
         </x-slot>
 
-        <table class="pw-table">
+        <table class="pw-table min-w-[900px]">
             <thead>
                 <tr>
                     <th>Cargo</th>
@@ -38,48 +49,81 @@
                     <th class="text-right">Ações</th>
                 </tr>
             </thead>
+
             <tbody>
                 @forelse ($items as $item)
                     <tr>
                         <td>
-                            <div class="font-semibold text-slate-900">{{ $item->nome }}</div>
+                            <div class="font-semibold text-slate-900">
+                                {{ $item->nome }}
+                            </div>
+
                             @if ($item->descricao)
-                                <div class="mt-1 max-w-md truncate text-xs text-slate-500" title="{{ $item->descricao }}">
+                                <div
+                                    class="mt-1 max-w-md truncate text-xs text-slate-500"
+                                    title="{{ $item->descricao }}"
+                                >
                                     {{ $item->descricao }}
                                 </div>
                             @endif
                         </td>
+
                         <td>
                             @if ($item->departamento)
-                                <span class="font-medium text-slate-700">{{ $item->departamento->nome }}</span>
+                                <span class="font-medium text-slate-700">
+                                    {{ $item->departamento->nome }}
+                                </span>
                             @else
-                                <span class="text-slate-400">Sem departamento</span>
+                                <span class="text-slate-400">
+                                    Sem departamento
+                                </span>
                             @endif
                         </td>
+
                         <td>
-                            <span class="font-mono text-sm text-slate-600">{{ $item->cbo ?: '—' }}</span>
+                            <span class="font-mono text-sm text-slate-600">
+                                {{ $item->cbo ?: '—' }}
+                            </span>
                         </td>
+
                         <td>
                             <span class="inline-flex min-w-8 items-center justify-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">
                                 {{ $item->funcionarios_count }}
                             </span>
                         </td>
+
                         <td>
-                            <x-pw.badge :variant="$item->ativo ? 'success' : 'neutral'">
-                                {{ $item->ativo ? 'Ativo' : 'Inativo' }}
+                            <x-pw.badge
+                                :variant="$item->ativo ? 'success' : 'neutral'"
+                            >
+                                {{ $item->status_label }}
                             </x-pw.badge>
                         </td>
+
                         <td>
-                            <div class="flex justify-end gap-2">
-                                <x-pw.button :href="route('cargos.edit', $item)" variant="ghost" size="sm">
+                            <div class="flex justify-end gap-1">
+                                <x-pw.button
+                                    :href="route('cargos.edit', $item)"
+                                    variant="ghost"
+                                    size="sm"
+                                >
                                     Editar
                                 </x-pw.button>
 
-                                <form method="POST" action="{{ route('cargos.destroy', $item) }}" onsubmit="return confirm('Deseja realmente excluir este cargo?')">
+                                <form
+                                    method="POST"
+                                    action="{{ route('cargos.destroy', $item) }}"
+                                    onsubmit="return confirm('Deseja realmente excluir o cargo {{ addslashes($item->nome) }}?')"
+                                >
                                     @csrf
                                     @method('DELETE')
 
-                                    <x-pw.button type="submit" variant="ghost" size="sm" class="!text-red-600 hover:!bg-red-50">
+                                    <x-pw.button
+                                        type="submit"
+                                        variant="ghost"
+                                        size="sm"
+                                        class="!text-red-600 hover:!bg-red-50"
+                                    >
                                         Excluir
                                     </x-pw.button>
                                 </form>
@@ -88,9 +132,9 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6">
+                        <td colspan="6" class="!p-0">
                             <x-pw.empty-state
-                                title="Nenhum cargo cadastrado"
+                                title="Nenhum cargo encontrado"
                                 description="Cadastre os cargos da empresa para vinculá-los aos funcionários."
                             >
                                 <x-pw.button :href="route('cargos.create')">

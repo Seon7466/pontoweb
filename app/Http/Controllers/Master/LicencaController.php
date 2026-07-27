@@ -72,11 +72,14 @@ class LicencaController extends Controller
                         ->orWhereDate('termina_em', '>=', today());
                 })
                 ->count(),
-
             'vencendo' => Licenca::query()
+                ->whereIn('status', [
+                    Licenca::STATUS_ATIVA,
+                    Licenca::STATUS_TESTE,
+                ])
                 ->whereNotNull('termina_em')
                 ->whereDate('termina_em', '>=', today())
-                ->whereDate('termina_em', '<=', today()->addDays(15))
+                ->whereDate('termina_em', '<=', today()->copy()->addDays(15))
                 ->count(),
 
             'bloqueadas' => Licenca::query()
@@ -214,13 +217,13 @@ class LicencaController extends Controller
 
         $base = $licenca->termina_em
             && $licenca->termina_em->isFuture()
-                ? $licenca->termina_em
-                : today();
+            ? $licenca->termina_em
+            : today();
 
         $licenca->update([
             'termina_em' => $base
                 ->copy()
-                ->addMonths($request->integer('meses')),
+                ->addMonthsNoOverflow($request->integer('meses')),
 
             'status' => Licenca::STATUS_ATIVA,
             'suspensa_em' => null,
@@ -263,17 +266,17 @@ class LicencaController extends Controller
     private function novoCodigo(): string
     {
         do {
-            $codigo = 'PW-'.Str::upper(
+            $codigo = 'PW-' . Str::upper(
                 Str::random(4)
-                .'-'
-                .Str::random(4)
-                .'-'
-                .Str::random(4)
+                    . '-'
+                    . Str::random(4)
+                    . '-'
+                    . Str::random(4)
             );
         } while (
             Licenca::query()
-                ->where('codigo', $codigo)
-                ->exists()
+            ->where('codigo', $codigo)
+            ->exists()
         );
 
         return $codigo;

@@ -7,11 +7,11 @@
 
     <x-pw.page-header
         title="Editar empresa"
-        :description="$empresa->nome_fantasia"
+        :description="$item->nome_fantasia"
     />
 
     <x-pw.card>
-        <form method="POST" action="{{ route('empresas.update', $empresa) }}">
+        <form method="POST" action="{{ route('empresas.update', $item) }}">
             @csrf
             @method('PUT')
             @include('empresas.form')
@@ -20,6 +20,8 @@
                 :cancel-href="route('empresas.index')"
                 submit-label="Salvar alterações"
             />
-        </form>
+        <form
+    method="POST"
+    enctype="multipart/form-data"
     </x-pw.card>
 </x-app-layout>

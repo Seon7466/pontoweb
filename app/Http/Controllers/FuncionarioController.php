@@ -16,23 +16,29 @@ use Illuminate\View\View;
 class FuncionarioController extends BaseCrudController
 {
     protected string $model = Funcionario::class;
+
     protected string $view = 'funcionarios';
+
     protected string $route = 'funcionarios';
+
     protected string $title = 'Funcionário';
+
     protected ?string $requestClass = FuncionarioRequest::class;
+
     protected bool $tenantScoped = true;
 
     public function index(Request $request): View
     {
-        $query = $this->scopedQuery()->with([
-            'departamento:id,nome',
-            'cargo:id,nome',
-            'horario:id,descricao',
-            'escala:id,descricao',
-        ]);
+        $query = $this->scopedQuery()
+            ->with([
+                'departamento:id,nome',
+                'cargo:id,nome',
+                'horario:id,descricao',
+                'escala:id,descricao',
+            ]);
 
         if ($request->filled('search')) {
-            $search = $request->string('search')->toString();
+            $search = trim($request->string('search')->toString());
 
             $query->where(function (Builder $builder) use ($search): void {
                 $builder
@@ -40,13 +46,24 @@ class FuncionarioController extends BaseCrudController
                     ->orWhere('cpf', 'like', "%{$search}%")
                     ->orWhere('matricula', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhereHas('departamento', fn (Builder $q) => $q->where('nome', 'like', "%{$search}%"))
-                    ->orWhereHas('cargo', fn (Builder $q) => $q->where('nome', 'like', "%{$search}%"));
+                    ->orWhereHas(
+                        'departamento',
+                        fn (Builder $departamento) => $departamento
+                            ->where('nome', 'like', "%{$search}%")
+                    )
+                    ->orWhereHas(
+                        'cargo',
+                        fn (Builder $cargo) => $cargo
+                            ->where('nome', 'like', "%{$search}%")
+                    );
             });
         }
 
         if ($request->filled('status')) {
-            $query->where('status', $request->boolean('status'));
+            $query->where(
+                'status',
+                $request->boolean('status')
+            );
         }
 
         $items = $query
@@ -54,26 +71,39 @@ class FuncionarioController extends BaseCrudController
             ->paginate($this->perPage)
             ->withQueryString();
 
-        $empresaId = auth()->user()->empresa_id;
-        $base = Funcionario::query()->where('empresa_id', $empresaId);
+        $resumoQuery = $this->scopedQuery();
+
         $resumo = [
-            'total' => (clone $base)->count(),
-            'ativos' => (clone $base)->where('status', true)->count(),
-            'inativos' => (clone $base)->where('status', false)->count(),
-            'sem_jornada' => (clone $base)
+            'total' => (clone $resumoQuery)->count(),
+
+            'ativos' => (clone $resumoQuery)
+                ->where('status', true)
+                ->count(),
+
+            'inativos' => (clone $resumoQuery)
+                ->where('status', false)
+                ->count(),
+
+            'sem_jornada' => (clone $resumoQuery)
                 ->whereNull('horario_id')
                 ->whereNull('escala_id')
                 ->count(),
         ];
 
-        return view('funcionarios.index', compact('items', 'resumo'));
+        return view('funcionarios.index', compact(
+            'items',
+            'resumo',
+        ));
     }
 
     public function create(): View
     {
         $this->ensureTenantIsAvailable();
 
-        return view('funcionarios.create', $this->formData());
+        return view(
+            'funcionarios.create',
+            $this->formData()
+        );
     }
 
     public function edit($id): View
@@ -81,10 +111,24 @@ class FuncionarioController extends BaseCrudController
         /** @var Funcionario $funcionario */
         $funcionario = $this->findScopedOrFail($id);
 
-        return view('funcionarios.edit', array_merge(
-            ['funcionario' => $funcionario],
-            $this->formData(),
-        ));
+        return view(
+            'funcionarios.edit',
+            array_merge(
+                ['funcionario' => $funcionario],
+                $this->formData(),
+            )
+        );
+    }
+
+    protected function searchableFields(): array
+    {
+        return [
+            'nome',
+            'cpf',
+            'matricula',
+            'email',
+            'telefone',
+        ];
     }
 
     /** @return array<string, mixed> */
@@ -97,26 +141,37 @@ class FuncionarioController extends BaseCrudController
                 ->where('empresa_id', $empresaId)
                 ->where('ativo', true)
                 ->orderBy('nome')
-                ->get(['id', 'nome']),
+                ->get([
+                    'id',
+                    'nome',
+                ]),
+
             'cargos' => Cargo::query()
                 ->where('empresa_id', $empresaId)
                 ->where('ativo', true)
                 ->orderBy('nome')
-                ->get(['id', 'nome', 'departamento_id']),
+                ->get([
+                    'id',
+                    'nome',
+                    'departamento_id',
+                ]),
+
             'horarios' => Horario::query()
                 ->where('empresa_id', $empresaId)
                 ->orderBy('descricao')
-                ->get(['id', 'descricao']),
+                ->get([
+                    'id',
+                    'descricao',
+                ]),
+
             'escalas' => Escala::query()
                 ->where('empresa_id', $empresaId)
                 ->where('ativo', true)
                 ->orderBy('descricao')
-                ->get(['id', 'descricao']),
+                ->get([
+                    'id',
+                    'descricao',
+                ]),
         ];
-    }
-
-    protected function searchableFields(): array
-    {
-        return ['nome', 'cpf', 'matricula', 'email', 'telefone'];
     }
 }

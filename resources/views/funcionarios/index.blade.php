@@ -66,7 +66,7 @@
                 </thead>
                 <tbody class="divide-y divide-slate-100 bg-white">
                     @foreach ($items as $funcionario)
-                        <tr class="transition hover:bg-slate-50">
+                        <tr class="transition hover:bg-blue-50/40">
                             <td class="px-5 py-4">
                                 <p class="font-semibold text-slate-900">{{ $funcionario->nome }}</p>
                                 <div class="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-slate-500">

@@ -18,6 +18,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'is_master',
     ];
 
     protected $hidden = [
@@ -37,5 +38,14 @@ class User extends Authenticatable
     public function empresa(): BelongsTo
     {
         return $this->belongsTo(Empresa::class);
+    }
+    public function isMaster(): bool
+    {
+        return (bool) $this->is_master;
+    }
+
+    public function isEmpresa(): bool
+    {
+        return ! $this->is_master;
     }
 }

@@ -12,7 +12,7 @@ class EnsureUserIsMaster
     {
         $user = $request->user();
 
-        if (! $user || ! $user->is_master) {
+        if (! $user || ! $user->isMaster()) {
             abort(403, 'Acesso restrito à administração da plataforma.');
         }
 

@@ -17,12 +17,10 @@ class EmpresaRequest extends FormRequest
         $empresaId = is_object($empresa) ? $empresa->getKey() : $empresa;
         $usuarioEmpresaId = auth()->user()->empresa_id;
 
-        // Criação é permitida somente para usuário ainda sem empresa.
         if ($empresaId === null) {
             return $usuarioEmpresaId === null;
         }
 
-        // Atualização somente da empresa vinculada ao usuário.
         return (int) $usuarioEmpresaId === (int) $empresaId;
     }
 
@@ -34,12 +32,14 @@ class EmpresaRequest extends FormRequest
         return [
             'razao_social' => ['required', 'string', 'max:255'],
             'nome_fantasia' => ['required', 'string', 'max:255'],
+
             'cnpj' => [
                 'required',
                 'string',
                 'max:18',
                 Rule::unique('empresas', 'cnpj')->ignore($empresaId),
             ],
+
             'inscricao_estadual' => ['nullable', 'string', 'max:255'],
             'telefone' => ['nullable', 'string', 'max:20'],
             'email' => ['nullable', 'email:rfc', 'max:255'],
@@ -49,6 +49,14 @@ class EmpresaRequest extends FormRequest
             'bairro' => ['nullable', 'string', 'max:255'],
             'cidade' => ['nullable', 'string', 'max:255'],
             'estado' => ['nullable', 'string', 'size:2'],
+
+            'logo' => [
+                'nullable',
+                'image',
+                'mimes:png,jpg,jpeg,webp',
+                'max:2048',
+            ],
+
             'ativo' => ['nullable', 'boolean'],
         ];
     }

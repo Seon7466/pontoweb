@@ -9,47 +9,62 @@ use App\Models\Equipamento;
 use App\Services\Ponto\ImportadorCsvService;
 use App\Services\Relogios\ControlId\ControlIdClassAdapter;
 use App\Services\Relogios\ControlId\ControlIdSyncService;
+use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Throwable;
 
 class EquipamentoController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): View
     {
-        $empresaId = auth()->user()->empresa_id;
-        abort_unless($empresaId, 403, 'Vincule uma empresa ao usuário.');
-
+        $empresaId = $this->empresaId();
         $search = trim((string) $request->string('search'));
+        $limiteOnline = now()->subMinutes(10);
 
         $baseQuery = Equipamento::query()
             ->where('empresa_id', $empresaId);
 
         $indicadores = [
             'total' => (clone $baseQuery)->count(),
-            'ativos' => (clone $baseQuery)->where('ativo', true)->count(),
+
+            'ativos' => (clone $baseQuery)
+                ->where('ativo', true)
+                ->count(),
+
             'online' => (clone $baseQuery)
                 ->where('ativo', true)
-                ->where('ultima_conexao_em', '>=', now()->subMinutes(10))
+                ->where('ultima_conexao_em', '>=', $limiteOnline)
                 ->count(),
+
             'offline' => (clone $baseQuery)
                 ->where('ativo', true)
-                ->where(function ($query) {
-                    $query->whereNull('ultima_conexao_em')
-                        ->orWhere('ultima_conexao_em', '<', now()->subMinutes(10));
+                ->where(function (Builder $query) use ($limiteOnline): void {
+                    $query
+                        ->whereNull('ultima_conexao_em')
+                        ->orWhere('ultima_conexao_em', '<', $limiteOnline);
                 })
                 ->count(),
         ];
 
         $items = (clone $baseQuery)
-            ->when($search !== '', function ($query) use ($search) {
-                $query->where(function ($subQuery) use ($search) {
-                    $subQuery->where('nome', 'like', "%{$search}%")
-                        ->orWhere('fabricante', 'like', "%{$search}%")
-                        ->orWhere('modelo', 'like', "%{$search}%")
-                        ->orWhere('numero_serie', 'like', "%{$search}%")
-                        ->orWhere('ip', 'like', "%{$search}%")
-                        ->orWhere('mac', 'like', "%{$search}%");
-                });
-            })
+            ->when(
+                $search !== '',
+                function (Builder $query) use ($search): void {
+                    $query->where(
+                        function (Builder $subQuery) use ($search): void {
+                            $subQuery
+                                ->where('nome', 'like', "%{$search}%")
+                                ->orWhere('fabricante', 'like', "%{$search}%")
+                                ->orWhere('modelo', 'like', "%{$search}%")
+                                ->orWhere('numero_serie', 'like', "%{$search}%")
+                                ->orWhere('ip', 'like', "%{$search}%")
+                                ->orWhere('mac', 'like', "%{$search}%");
+                        }
+                    );
+                }
+            )
             ->latest()
             ->paginate(15)
             ->withQueryString();
@@ -57,7 +72,11 @@ class EquipamentoController extends Controller
         $equipamentosImportacao = (clone $baseQuery)
             ->where('ativo', true)
             ->orderBy('nome')
-            ->get(['id', 'nome', 'modelo']);
+            ->get([
+                'id',
+                'nome',
+                'modelo',
+            ]);
 
         return view('equipamentos.index', compact(
             'items',
@@ -67,120 +86,207 @@ class EquipamentoController extends Controller
         ));
     }
 
-    public function create()
+    public function create(): View
     {
-        abort_unless(auth()->user()->empresa_id, 403, 'Vincule uma empresa ao usuário.');
+        $this->empresaId();
 
         return view('equipamentos.create');
     }
 
-    public function store(EquipamentoRequest $request)
-    {
-        $data = $this->normalizarDados($request);
-        Equipamento::create($data + ['empresa_id' => auth()->user()->empresa_id]);
+    public function store(
+        EquipamentoRequest $request
+    ): RedirectResponse {
+        Equipamento::create([
+            ...$this->normalizarDados($request),
+            'empresa_id' => $this->empresaId(),
+        ]);
 
-        return redirect()->route('equipamentos.index')->with('success', 'Equipamento cadastrado com sucesso.');
+        return redirect()
+            ->route('equipamentos.index')
+            ->with(
+                'success',
+                'Equipamento cadastrado com sucesso.'
+            );
     }
 
-    public function edit(Equipamento $equipamento)
-    {
+    public function edit(
+        Equipamento $equipamento
+    ): View {
         $this->autorizar($equipamento);
 
-        return view('equipamentos.edit', compact('equipamento'));
+        return view(
+            'equipamentos.edit',
+            compact('equipamento')
+        );
     }
 
-    public function update(EquipamentoRequest $request, Equipamento $equipamento)
-    {
+    public function update(
+        EquipamentoRequest $request,
+        Equipamento $equipamento
+    ): RedirectResponse {
         $this->autorizar($equipamento);
-        $data = $this->normalizarDados($request);
+
+        $dados = $this->normalizarDados($request);
 
         if (! $request->filled('senha_api')) {
-            unset($data['senha_api']);
+            unset($dados['senha_api']);
         }
 
-        $equipamento->update($data);
+        $equipamento->update($dados);
 
-        return redirect()->route('equipamentos.index')->with('success', 'Equipamento atualizado com sucesso.');
+        return redirect()
+            ->route('equipamentos.index')
+            ->with(
+                'success',
+                'Equipamento atualizado com sucesso.'
+            );
     }
 
-    public function destroy(Equipamento $equipamento)
-    {
+    public function destroy(
+        Equipamento $equipamento
+    ): RedirectResponse {
         $this->autorizar($equipamento);
+
         $equipamento->delete();
 
-        return redirect()->route('equipamentos.index')->with('success', 'Equipamento excluído com sucesso.');
+        return redirect()
+            ->route('equipamentos.index')
+            ->with(
+                'success',
+                'Equipamento excluído com sucesso.'
+            );
     }
 
-    public function importar(ImportarMarcacoesRequest $request, ImportadorCsvService $importador)
-    {
+    public function importar(
+        ImportarMarcacoesRequest $request,
+        ImportadorCsvService $importador
+    ): RedirectResponse {
         $equipamento = Equipamento::query()
-            ->where('empresa_id', auth()->user()->empresa_id)
-            ->findOrFail($request->integer('equipamento_id'));
+            ->where('empresa_id', $this->empresaId())
+            ->findOrFail(
+                $request->integer('equipamento_id')
+            );
 
         try {
-            $resultado = $importador->importar($request->file('arquivo'), $equipamento);
-        } catch (\Throwable $e) {
-            return back()->with('error', $e->getMessage());
+            $resultado = $importador->importar(
+                $request->file('arquivo'),
+                $equipamento
+            );
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return back()->with(
+                'error',
+                'Não foi possível importar as marcações.'
+            );
         }
 
-        return back()->with('success', sprintf(
-            'Importação concluída: %d lidas, %d importadas, %d duplicadas e %d erros.',
-            $resultado['lidas'], $resultado['importadas'], $resultado['duplicadas'], $resultado['erros']
-        ));
+        return back()->with(
+            'success',
+            sprintf(
+                'Importação concluída: %d lidas, %d importadas, %d duplicadas e %d erros.',
+                $resultado['lidas'],
+                $resultado['importadas'],
+                $resultado['duplicadas'],
+                $resultado['erros']
+            )
+        );
     }
 
-    public function testarConexao(Equipamento $equipamento, ControlIdClassAdapter $adapter)
-    {
+    public function testarConexao(
+        Equipamento $equipamento,
+        ControlIdClassAdapter $adapter
+    ): RedirectResponse {
         $this->autorizar($equipamento);
 
         try {
             $adapter->testarConexao($equipamento);
+        } catch (Throwable $exception) {
+            report($exception);
 
-            return back()->with('success', 'Conexão com o REP iDClass realizada com sucesso.');
-        } catch (\Throwable $e) {
             $equipamento->forceFill([
                 'ultima_falha_em' => now(),
-                'ultima_mensagem' => $e->getMessage(),
+                'ultima_mensagem' => $exception->getMessage(),
             ])->save();
 
-            return back()->with('error', 'Falha na conexão: '.$e->getMessage());
+            return back()->with(
+                'error',
+                'Não foi possível estabelecer conexão com o equipamento.'
+            );
         }
+
+        return back()->with(
+            'success',
+            'Conexão com o REP iDClass realizada com sucesso.'
+        );
     }
 
     public function sincronizar(
         SincronizarControlIdRequest $request,
         Equipamento $equipamento,
-        ControlIdSyncService $service,
-    ) {
+        ControlIdSyncService $service
+    ): RedirectResponse {
         $this->autorizar($equipamento);
 
         try {
-            $resultado = $service->sincronizar($equipamento, $request->boolean('processar', true));
+            $resultado = $service->sincronizar(
+                $equipamento,
+                $request->boolean('processar', true)
+            );
+        } catch (Throwable $exception) {
+            report($exception);
 
-            return back()->with('success', sprintf(
+            return back()->with(
+                'error',
+                'Não foi possível sincronizar o equipamento.'
+            );
+        }
+
+        return back()->with(
+            'success',
+            sprintf(
                 'Sincronização concluída: %d recebidas, %d novas, %d duplicadas, %d processadas e %d erros.',
                 $resultado['recebidas'],
                 $resultado['novas'],
                 $resultado['duplicadas'],
                 $resultado['processadas'],
                 $resultado['erros']
-            ));
-        } catch (\Throwable $e) {
-            return back()->with('error', 'Falha na sincronização: '.$e->getMessage());
-        }
+            )
+        );
     }
 
-    private function normalizarDados(EquipamentoRequest $request): array
-    {
-        return $request->validated() + [
-            'ativo' => $request->boolean('ativo'),
-            'verificar_ssl' => $request->boolean('verificar_ssl'),
-            'modo_671' => $request->boolean('modo_671'),
-        ];
+    private function normalizarDados(
+        EquipamentoRequest $request
+    ): array {
+        return array_replace(
+            $request->validated(),
+            [
+                'ativo' => $request->boolean('ativo'),
+                'verificar_ssl' => $request->boolean('verificar_ssl'),
+                'modo_671' => $request->boolean('modo_671'),
+            ]
+        );
     }
 
-    private function autorizar(Equipamento $equipamento): void
+    private function autorizar(
+        Equipamento $equipamento
+    ): void {
+        abort_unless(
+            (int) $equipamento->empresa_id === $this->empresaId(),
+            404
+        );
+    }
+
+    private function empresaId(): int
     {
-        abort_unless($equipamento->empresa_id === auth()->user()->empresa_id, 404);
+        $empresaId = auth()->user()?->empresa_id;
+
+        abort_unless(
+            $empresaId,
+            403,
+            'Vincule uma empresa ao usuário.'
+        );
+
+        return (int) $empresaId;
     }
 }

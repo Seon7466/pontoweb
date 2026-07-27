@@ -1,1 +1,20 @@
-<x-app-layout><x-slot name="header"><div><h2 class="text-lg font-semibold text-slate-900">Nova licença</h2><p class="text-xs text-slate-500">Ativação comercial</p></div></x-slot><x-pw.page-header title="Cadastrar licença" description="Vincule uma empresa a um plano e gere o primeiro token do Agente." />@include('master.licencas.form')</x-app-layout>
+<x-app-layout>
+    <x-slot name="header">
+        <div>
+            <h2 class="text-lg font-semibold text-slate-900">
+                Nova licença
+            </h2>
+
+            <p class="text-xs text-slate-500">
+                Ativação comercial
+            </p>
+        </div>
+    </x-slot>
+
+    <x-pw.page-header
+        title="Cadastrar licença"
+        description="Vincule uma empresa a um plano e gere o primeiro token do PontoWeb Agent."
+    />
+
+    @include('master.licencas.form')
+</x-app-layout>

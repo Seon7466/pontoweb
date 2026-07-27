@@ -21,6 +21,8 @@
                 :cancel-href="route('empresas.index')"
                 submit-label="Cadastrar empresa"
             />
-        </form>
+        <form
+    method="POST"
+    enctype="multipart/form-data"
     </x-pw.card>
 </x-app-layout>

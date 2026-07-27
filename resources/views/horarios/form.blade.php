@@ -1,5 +1,29 @@
+@php
+    $item = $item ?? null;
+
+    $entrada = $item?->entrada
+        ? substr((string) $item->entrada, 0, 5)
+        : null;
+
+    $saida = $item?->saida
+        ? substr((string) $item->saida, 0, 5)
+        : null;
+
+    $inicioIntervalo = $item?->inicio_intervalo
+        ? substr((string) $item->inicio_intervalo, 0, 5)
+        : null;
+
+    $fimIntervalo = $item?->fim_intervalo
+        ? substr((string) $item->fim_intervalo, 0, 5)
+        : null;
+@endphp
+
 @if ($errors->any())
-    <x-pw.alert type="error" title="Revise os campos informados" class="mb-6">
+    <x-pw.alert
+        type="error"
+        title="Revise os campos informados"
+        class="mb-6"
+    >
         Existem dados inválidos ou obrigatórios que precisam ser corrigidos.
     </x-pw.alert>
 @endif
@@ -7,15 +31,20 @@
 <div class="space-y-8">
     <section>
         <div class="mb-4">
-            <h3 class="text-base font-semibold text-slate-900">Identificação</h3>
-            <p class="mt-1 text-sm text-slate-500">Use uma descrição clara para facilitar a associação com funcionários e escalas.</p>
+            <h3 class="text-base font-semibold text-slate-900">
+                Identificação
+            </h3>
+
+            <p class="mt-1 text-sm text-slate-500">
+                Use uma descrição clara para facilitar a associação com funcionários e escalas.
+            </p>
         </div>
 
         <div class="max-w-xl">
             <x-pw.input
                 label="Descrição do horário"
                 name="descricao"
-                :value="$item->descricao ?? ''"
+                :value="old('descricao', $item?->descricao)"
                 placeholder="Ex.: Administrativo 08h às 17h"
                 required
                 autofocus
@@ -25,8 +54,13 @@
 
     <section class="border-t border-slate-200 pt-6">
         <div class="mb-4">
-            <h3 class="text-base font-semibold text-slate-900">Jornada diária</h3>
-            <p class="mt-1 text-sm text-slate-500">Informe os horários previstos de entrada, saída e intervalo.</p>
+            <h3 class="text-base font-semibold text-slate-900">
+                Jornada diária
+            </h3>
+
+            <p class="mt-1 text-sm text-slate-500">
+                Informe os horários previstos de entrada, saída e intervalo.
+            </p>
         </div>
 
         <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -34,7 +68,7 @@
                 label="Entrada"
                 name="entrada"
                 type="time"
-                :value="isset($item) && $item->entrada ? substr($item->entrada, 0, 5) : ''"
+                :value="old('entrada', $entrada)"
                 required
             />
 
@@ -42,21 +76,21 @@
                 label="Início do intervalo"
                 name="inicio_intervalo"
                 type="time"
-                :value="isset($item) && $item->inicio_intervalo ? substr($item->inicio_intervalo, 0, 5) : ''"
+                :value="old('inicio_intervalo', $inicioIntervalo)"
             />
 
             <x-pw.input
                 label="Fim do intervalo"
                 name="fim_intervalo"
                 type="time"
-                :value="isset($item) && $item->fim_intervalo ? substr($item->fim_intervalo, 0, 5) : ''"
+                :value="old('fim_intervalo', $fimIntervalo)"
             />
 
             <x-pw.input
                 label="Saída"
                 name="saida"
                 type="time"
-                :value="isset($item) && $item->saida ? substr($item->saida, 0, 5) : ''"
+                :value="old('saida', $saida)"
                 required
             />
         </div>
@@ -68,8 +102,13 @@
 
     <section class="border-t border-slate-200 pt-6">
         <div class="mb-4">
-            <h3 class="text-base font-semibold text-slate-900">Tolerâncias</h3>
-            <p class="mt-1 text-sm text-slate-500">Defina a margem, em minutos, utilizada na futura apuração da jornada.</p>
+            <h3 class="text-base font-semibold text-slate-900">
+                Tolerâncias
+            </h3>
+
+            <p class="mt-1 text-sm text-slate-500">
+                Defina a margem, em minutos, utilizada na apuração da jornada.
+            </p>
         </div>
 
         <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
@@ -79,7 +118,8 @@
                 type="number"
                 min="0"
                 max="180"
-                :value="$item->tolerancia_entrada ?? 0"
+                step="1"
+                :value="old('tolerancia_entrada', $item?->tolerancia_entrada ?? 0)"
                 help="Quantidade máxima de minutos permitidos na entrada."
             />
 
@@ -89,7 +129,8 @@
                 type="number"
                 min="0"
                 max="180"
-                :value="$item->tolerancia_saida ?? 0"
+                step="1"
+                :value="old('tolerancia_saida', $item?->tolerancia_saida ?? 0)"
                 help="Quantidade máxima de minutos permitidos na saída."
             />
         </div>

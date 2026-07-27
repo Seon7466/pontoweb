@@ -1,9 +1,13 @@
+@php
+    $item = $item ?? null;
+@endphp
+
 <div class="space-y-6">
     <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
         <x-pw.input
             label="Nome do departamento"
             name="nome"
-            :value="$item->nome ?? ''"
+            :value="old('nome', $item?->nome)"
             placeholder="Ex.: Recursos Humanos"
             required
         />
@@ -11,7 +15,7 @@
         <x-pw.input
             label="Responsável"
             name="responsavel"
-            :value="$item->responsavel ?? ''"
+            :value="old('responsavel', $item?->responsavel)"
             placeholder="Nome do gestor responsável"
         />
     </div>
@@ -20,8 +24,8 @@
         <x-pw.checkbox
             label="Departamento ativo"
             name="ativo"
-            :checked="$item->ativo ?? true"
-            help="Departamentos inativos não devem ser usados em novos cadastros de funcionários e cargos."
+            :checked="(bool) old('ativo', $item?->ativo ?? true)"
+            help="Departamentos inativos não devem ser utilizados em novos cadastros de funcionários e cargos."
         />
     </div>
 </div>

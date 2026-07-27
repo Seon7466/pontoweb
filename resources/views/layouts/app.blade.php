@@ -26,7 +26,7 @@
             x-cloak
             x-show="sidebarOpen"
             x-transition.opacity
-            class="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-sm lg:hidden"
+            class="fixed inset-0 z-40 bg-slate-950/65 backdrop-blur-sm lg:hidden"
             @click="sidebarOpen = false"
             aria-hidden="true"
         ></div>
@@ -34,12 +34,12 @@
         @include('layouts.app.sidebar')
 
         <div
-            class="flex min-h-screen min-w-0 flex-col transition-[padding] duration-200"
-            :class="sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-72'"
+            class="flex min-h-screen min-w-0 flex-col transition-[padding] duration-300 ease-out"
+            :class="sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-64'"
         >
             @include('layouts.app.topbar')
 
-            <main class="flex-1 px-4 py-6 sm:px-6 lg:px-8">
+            <main class="flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-7">
                 <div class="mx-auto w-full max-w-screen-2xl">
                     <x-pw.flash />
 

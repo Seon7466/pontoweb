@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Departamento extends Model
 {
@@ -15,34 +17,35 @@ class Departamento extends Model
         'empresa_id',
         'nome',
         'responsavel',
-        'ativo'
+        'ativo',
     ];
 
-    protected $casts = [
-        'ativo' => 'boolean',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'ativo' => 'boolean',
+        ];
+    }
 
-    /**
-     * Empresa à qual o departamento pertence.
-     */
-    public function empresa()
+    public function empresa(): BelongsTo
     {
         return $this->belongsTo(Empresa::class);
     }
 
-    /**
-     * Cargos vinculados ao departamento.
-     */
-    public function cargos()
+    public function cargos(): HasMany
     {
         return $this->hasMany(Cargo::class);
     }
 
-    /**
-     * Funcionários vinculados ao departamento.
-     */
-    public function funcionarios()
+    public function funcionarios(): HasMany
     {
         return $this->hasMany(Funcionario::class);
+    }
+
+    public function getStatusLabelAttribute(): string
+    {
+        return $this->ativo
+            ? 'Ativo'
+            : 'Inativo';
     }
 }

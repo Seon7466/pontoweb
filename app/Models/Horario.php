@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Horario extends Model
 {
@@ -22,19 +24,22 @@ class Horario extends Model
         'tolerancia_saida',
     ];
 
-    /**
-     * Empresa proprietária do horário.
-     */
-    public function empresa()
+    public function empresa(): BelongsTo
     {
         return $this->belongsTo(Empresa::class);
     }
 
-    /**
-     * Funcionários vinculados a este horário.
-     */
-    public function funcionarios()
+    public function funcionarios(): HasMany
     {
         return $this->hasMany(Funcionario::class);
+    }
+
+    public function getCargaHorariaLabelAttribute(): string
+    {
+        if (! $this->entrada || ! $this->saida) {
+            return '-';
+        }
+
+        return "{$this->entrada} às {$this->saida}";
     }
 }

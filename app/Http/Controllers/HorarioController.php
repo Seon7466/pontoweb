@@ -5,33 +5,46 @@ namespace App\Http\Controllers;
 use App\Core\Controllers\BaseCrudController;
 use App\Http\Requests\HorarioRequest;
 use App\Models\Horario;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class HorarioController extends BaseCrudController
 {
     protected string $model = Horario::class;
+
     protected string $view = 'horarios';
+
     protected string $route = 'horarios';
+
     protected string $title = 'Horário';
+
     protected ?string $requestClass = HorarioRequest::class;
+
     protected bool $tenantScoped = true;
 
     protected function searchableFields(): array
     {
-        return ['descricao'];
+        return [
+            'descricao',
+        ];
     }
 
-    public function index(Request $request)
+    public function index(Request $request): View
     {
-        $query = $this->scopedQuery()->withCount('funcionarios');
+        $query = $this->scopedQuery()
+            ->withCount('funcionarios');
 
         if ($request->filled('search')) {
-            $search = $request->string('search')->toString();
+            $search = trim($request->string('search')->toString());
 
-            $query->where(function (Builder $builder) use ($search) {
+            $query->where(function (Builder $builder) use ($search): void {
                 foreach ($this->searchableFields() as $field) {
-                    $builder->orWhere($field, 'like', "%{$search}%");
+                    $builder->orWhere(
+                        $field,
+                        'like',
+                        "%{$search}%"
+                    );
                 }
             });
         }

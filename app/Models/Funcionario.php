@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Funcionario extends Model
 {
@@ -29,50 +31,66 @@ class Funcionario extends Model
         'email',
         'telefone',
         'foto',
-        'status'
+        'status',
     ];
 
-    protected $casts = [
-        'admissao' => 'date',
-        'demissao' => 'date',
-        'nascimento' => 'date'
-    ];
+    protected function casts(): array
+    {
+        return [
+            'nascimento' => 'date',
+            'admissao' => 'date',
+            'demissao' => 'date',
+            'status' => 'boolean',
+        ];
+    }
 
-    /**
-     * RELACIONAMENTOS
-     */
-
-    public function empresa()
+    public function empresa(): BelongsTo
     {
         return $this->belongsTo(Empresa::class);
     }
 
-    public function departamento()
+    public function departamento(): BelongsTo
     {
         return $this->belongsTo(Departamento::class);
     }
 
-    public function cargo()
+    public function cargo(): BelongsTo
     {
         return $this->belongsTo(Cargo::class);
     }
 
-    public function horario()
+    public function horario(): BelongsTo
     {
         return $this->belongsTo(Horario::class);
     }
 
-    public function escala()
+    public function escala(): BelongsTo
     {
         return $this->belongsTo(Escala::class);
     }
 
-    public function batidas()
+    public function batidas(): HasMany
     {
         return $this->hasMany(BatidaPonto::class);
     }
-    public function horasExtras()
+
+    public function horasExtras(): HasMany
     {
         return $this->hasMany(HoraExtra::class);
+    }
+
+    public function getAtivoAttribute(): bool
+    {
+        return (bool) $this->status;
+    }
+
+    public function getDesligadoAttribute(): bool
+    {
+        return ! $this->status || $this->demissao !== null;
+    }
+
+    public function getNomeCompletoAttribute(): string
+    {
+        return trim($this->nome);
     }
 }
